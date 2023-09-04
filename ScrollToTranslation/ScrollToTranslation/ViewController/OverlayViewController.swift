@@ -9,45 +9,46 @@
 import UIKit
 
 protocol OverlayViewControllerDelegate: class {
-    func scrollViewDidScroll(_ scrollView: UIScrollView)
-    func scrollView(_ scrollView: UIScrollView,
-                    willEndScrollingWithVelocity velocity: CGPoint,
-                    targetContentOffset: UnsafeMutablePointer<CGPoint>)
+  func scrollViewDidScroll(_ scrollView: UIScrollView)
+  func scrollView(_ scrollView: UIScrollView,
+                  willEndScrollingWithVelocity velocity: CGPoint,
+                  targetContentOffset: UnsafeMutablePointer<CGPoint>)
 }
 
 class OverlayViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+  weak var delegate: OverlayViewControllerDelegate?
 
-    weak var delegate: OverlayViewControllerDelegate?
+  private(set) lazy var tableView = UITableView()
 
-    private(set) lazy var tableView = UITableView()
+  override func loadView() {
+    view = tableView
+    tableView.dataSource = self
+    tableView.showsVerticalScrollIndicator = false
+    tableView.delegate = self
+  }
 
-    override func loadView() {
-        view = tableView
-        tableView.dataSource = self
-        tableView.showsVerticalScrollIndicator = false
-        tableView.delegate = self
-    }
+  // MARK: UITableViewDataSource, UITableViewDelegate
 
-    // MARK: - UITableViewDataSource, UITableViewDelegate
+  func tableView(_ tableView: UITableView,
+                 cellForRowAt indexPath: IndexPath) -> UITableViewCell
+  {
+    let cell = tableView.dequeueReusableCell(withIdentifier: "cell") ?? UITableViewCell(style: .default, reuseIdentifier: "cell")
+    cell.textLabel?.text = "Cell \(indexPath.item)"
+    return cell
+  }
 
-    func tableView(_ tableView: UITableView,
-                   cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") ?? UITableViewCell(style: .default, reuseIdentifier: "cell")
-        cell.textLabel?.text = "Cell \(indexPath)"
-        return cell
-    }
+  func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    return 20
+  }
 
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 10
-    }
+  func scrollViewDidScroll(_ scrollView: UIScrollView) {
+    delegate?.scrollViewDidScroll(scrollView)
+  }
 
-    func scrollViewDidScroll(_ scrollView: UIScrollView) {
-        delegate?.scrollViewDidScroll(scrollView)
-    }
-
-    func scrollViewWillEndDragging(_ scrollView: UIScrollView,
-                                   withVelocity velocity: CGPoint,
-                                   targetContentOffset: UnsafeMutablePointer<CGPoint>) {
-        delegate?.scrollView(scrollView, willEndScrollingWithVelocity: velocity, targetContentOffset: targetContentOffset)
-    }
+  func scrollViewWillEndDragging(_ scrollView: UIScrollView,
+                                 withVelocity velocity: CGPoint,
+                                 targetContentOffset: UnsafeMutablePointer<CGPoint>)
+  {
+    delegate?.scrollView(scrollView, willEndScrollingWithVelocity: velocity, targetContentOffset: targetContentOffset)
+  }
 }

@@ -9,32 +9,31 @@
 import UIKit
 
 class PassThroughView: UIView {
+  // MARK: - Life Cycle
 
-    // MARK: - Life Cycle
+  override init(frame: CGRect) {
+    super.init(frame: frame)
+    setUpView()
+  }
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-        setUpView()
+  required init?(coder aDecoder: NSCoder) {
+    super.init(coder: aDecoder)
+    setUpView()
+  }
+
+  // MARK: - UIView
+
+  override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
+    let view = super.hitTest(point, with: event)
+    if view == self {
+      return nil
     }
+    return view
+  }
 
-    required init?(coder aDecoder: NSCoder) {
-        super.init(coder: aDecoder)
-        setUpView()
-    }
+  // MARK: - Private
 
-    // MARK: - UIView
-
-    override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
-        let view = super.hitTest(point, with: event)
-        if view == self {
-            return nil
-        }
-        return view
-    }
-
-    // MARK: - Private
-
-    private func setUpView() {
-        backgroundColor = .clear
-    }
+  private func setUpView() {
+    backgroundColor = .clear
+  }
 }
